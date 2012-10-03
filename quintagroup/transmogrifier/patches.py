@@ -140,3 +140,28 @@ if PYTHON_VERSION == (2, 4):
 
     frombuf = classmethod(frombuf)
     TarInfo.frombuf = frombuf
+
+
+def marshall_value(value):
+    from DateTime import DateTime
+    from Products.CMFPlone.utils import safe_unicode
+
+    if isinstance(value, str):
+        return value, 'str'
+    elif isinstance(value, unicode):
+        new_val = safe_unicode(value, 'UTF-8').encode('UTF-8'), 'str'
+        return new_val
+    elif isinstance(value, int):
+        return str(value), 'int'
+    elif isinstance(value, float):
+        return str(value), 'float'
+    elif isinstance(value, DateTime):
+        return value.ISO8601(), 'date'
+    elif isinstance(value, type(None)):
+        return 'None', 'None'
+    else:
+        raise SyntaxError("Unknown value type %r" % value)
+
+from Products.Marshall.namespaces import cmfns
+cmfns._marshall_value = cmfns.marshall_value
+cmfns.marshall_value = marshall_value
