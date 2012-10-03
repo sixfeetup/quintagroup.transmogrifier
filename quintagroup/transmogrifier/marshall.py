@@ -27,7 +27,7 @@ class MarshallerSection(object):
         self.fileskey = options.get('files-key', '_files').strip()
 
         self.excludekey = defaultMatcher(options, 'exclude-key', name, 'excluded_fields')
-        self.exclude = filter(None, [i.strip() for i in 
+        self.exclude = filter(None, [i.strip() for i in
                               options.get('exclude', '').splitlines()])
 
         self.atxml = registry.getComponent("atxml")
@@ -55,7 +55,11 @@ class MarshallerSection(object):
                     content_type, length, data = self.atxml.marshall(obj, atns_exclude=atns_exclude)
                 except ConflictError:
                     raise
-                except Exception:
+                except (Exception,), err:
+                    print 'Exception in marshaller section:'
+                    print '-'*60
+                    traceback.print_exc()
+                    print '-'*60
                     data = None
 
                 if data or data is None:
@@ -83,7 +87,7 @@ class DemarshallerSection(object):
         # we can do this with xml.dom.minodom, if it'll be needed in the future
         # self.excludekey = defaultMatcher(options, 'exclude-key', name, 'excluded_fields')
 
-        # self.exclude = filter(None, [i.strip() for i in 
+        # self.exclude = filter(None, [i.strip() for i in
         #                     options.get('exclude', '').splitlines()])
 
         self.atxml = registry.getComponent("atxml")
